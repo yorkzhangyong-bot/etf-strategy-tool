@@ -18,7 +18,7 @@ CREATE INDEX IF NOT EXISTS idx_etfs_updated_at ON etfs(updated_at);
 -- 策略定义
 CREATE TABLE IF NOT EXISTS strategies (
   id            SERIAL PRIMARY KEY,
-  name          VARCHAR(100) NOT NULL,
+  name          VARCHAR(100) NOT NULL UNIQUE,
   type          VARCHAR(20) NOT NULL,
   factors       JSONB NOT NULL,
   params        JSONB NOT NULL,
@@ -69,4 +69,4 @@ INSERT INTO strategies (name, type, factors, params) VALUES
   ('股债平衡 60/40', 'classic', '[{"name":"momentum","weight":50},{"name":"low_vol","weight":50}]', '{"lookback":"12m","max_holdings":15,"rebalance":"monthly"}'),
   ('趋势跟踪', 'classic', '[{"name":"trend_strength","weight":100}]', '{"lookback":"3m","max_holdings":5,"rebalance":"monthly"}'),
   ('定投策略', 'classic', '[{"name":"momentum","weight":40},{"name":"expense","weight":60}]', '{"lookback":"12m","max_holdings":5,"rebalance":"monthly"}')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
