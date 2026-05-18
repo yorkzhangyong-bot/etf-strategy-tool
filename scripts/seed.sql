@@ -1,0 +1,22 @@
+INSERT INTO etfs (ticker, name, issuer, category, expense_ratio, aum, inception, currency, region, asset_class) VALUES
+  ('SPY', 'SPDR S&P 500 ETF Trust', 'State Street', '大盘股', 0.0009, 520000000000, '1993-01-22', 'USD', '美国', 'Equity'),
+  ('QQQ', 'Invesco QQQ Trust', 'Invesco', '科技股', 0.0020, 280000000000, '1999-03-10', 'USD', '美国', 'Equity'),
+  ('VTI', 'Vanguard Total Stock Market ETF', 'Vanguard', '全市场', 0.0003, 420000000000, '2001-05-24', 'USD', '美国', 'Equity'),
+  ('IWM', 'iShares Russell 2000 ETF', 'BlackRock', '小盘股', 0.0019, 72000000000, '2000-05-22', 'USD', '美国', 'Equity'),
+  ('EFA', 'iShares MSCI EAFE ETF', 'BlackRock', '国际发达市场', 0.0033, 56000000000, '2001-08-14', 'USD', '全球', 'Equity'),
+  ('EEM', 'iShares MSCI Emerging Markets ETF', 'BlackRock', '新兴市场', 0.0069, 27000000000, '2003-04-07', 'USD', '新兴市场', 'Equity'),
+  ('TLT', 'iShares 20+ Year Treasury Bond ETF', 'BlackRock', '长期国债', 0.0015, 56000000000, '2002-07-22', 'USD', '美国', 'Bond'),
+  ('GLD', 'SPDR Gold Trust', 'State Street', '黄金', 0.0040, 65000000000, '2004-11-18', 'USD', '全球', 'Commodity'),
+  ('BND', 'Vanguard Total Bond Market ETF', 'Vanguard', '全市场债券', 0.0003, 110000000000, '2007-04-03', 'USD', '美国', 'Bond'),
+  ('VWO', 'Vanguard FTSE Emerging Markets ETF', 'Vanguard', '新兴市场', 0.0008, 85000000000, '2005-03-04', 'USD', '新兴市场', 'Equity'),
+  ('VEA', 'Vanguard FTSE Developed Markets ETF', 'Vanguard', '国际发达市场', 0.0005, 130000000000, '2007-07-20', 'USD', '全球', 'Equity'),
+  ('VNQ', 'Vanguard Real Estate ETF', 'Vanguard', 'REIT', 0.0012, 60000000000, '2004-09-23', 'USD', '美国', 'RealEstate'),
+  ('XLK', 'Technology Select Sector SPDR', 'State Street', '科技', 0.0009, 70000000000, '1998-12-16', 'USD', '美国', 'Equity'),
+  ('XLV', 'Health Care Select Sector SPDR', 'State Street', '医疗健康', 0.0009, 42000000000, '1998-12-16', 'USD', '美国', 'Equity'),
+  ('XLF', 'Financial Select Sector SPDR', 'State Street', '金融', 0.0009, 40000000000, '1998-12-16', 'USD', '美国', 'Equity'),
+  ('ARKK', 'ARK Innovation ETF', 'ARK Invest', '创新科技', 0.0075, 8000000000, '2014-10-31', 'USD', '美国', 'Equity'),
+  ('LQD', 'iShares iBoxx Inv Grade Corp Bond ETF', 'BlackRock', '投资级公司债', 0.0014, 37000000000, '2002-07-22', 'USD', '美国', 'Bond'),
+  ('HYG', 'iShares iBoxx High Yield Corp Bond ETF', 'BlackRock', '高收益债', 0.0049, 18000000000, '2007-04-04', 'USD', '美国', 'Bond'),
+  ('SCHD', 'Schwab US Dividend Equity ETF', 'Charles Schwab', '红利股票', 0.0006, 60000000000, '2011-10-20', 'USD', '美国', 'Equity'),
+  ('DIA', 'SPDR Dow Jones Industrial Average ETF', 'State Street', '蓝筹股', 0.0016, 35000000000, '1998-01-13', 'USD', '美国', 'Equity')
+ON CONFLICT (ticker) DO NOTHING;
