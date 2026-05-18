@@ -22,6 +22,7 @@ export function StrategySelector() {
   const [factorWeight, setFactorWeight] = useState<Record<string, number>>({});
   const [recommendations, setRecommendations] = useState<EtfRecommendation[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('/api/strategies')
@@ -40,21 +41,27 @@ export function StrategySelector() {
 
   async function handleRecommend() {
     setLoading(true);
-    const factors = mode === 'classic'
-      ? strategies.find(s => s.id === selectedId)?.factors || []
-      : customFactors.map(f => ({ ...f, weight: factorWeight[f.name] || 0 }));
-
-    const resp = await fetch('/api/strategies/recommend', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-Key': 'dev-secret-key' },
-      body: JSON.stringify({
-        strategy_id: mode === 'classic' ? selectedId : -1,
-        params: { lookback: '6m', max_holdings: 10 },
-      }),
-    });
-    const data = await resp.json();
-    setRecommendations(data.recommendations || []);
-    setLoading(false);
+    setError('');
+    try {
+      const resp = await fetch('/api/strategies/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': 'dev-secret-key' },
+        body: JSON.stringify({
+          strategy_id: mode === 'classic' ? selectedId : -1,
+          params: { lookback: '6m', max_holdings: 10 },
+        }),
+      });
+      const data = await resp.json();
+      if (data.error) {
+        setError(data.detail || '策略推荐失败，请稍后重试');
+      } else {
+        setRecommendations(data.recommendations || []);
+      }
+    } catch {
+      setError('无法连接计算服务，请检查 Python 函数是否已启动');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -139,6 +146,7 @@ export function StrategySelector() {
       {/* Right panel: recommendations */}
       <div className="flex-1">
         <h3 className="text-sm font-medium text-gray-500 mb-3">推荐结果 (按评分排序)</h3>
+        {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm mb-3">{error}</div>}
         {recommendations.length > 0 ? (
           <div className="border rounded-lg divide-y">
             {recommendations.map(rec => (

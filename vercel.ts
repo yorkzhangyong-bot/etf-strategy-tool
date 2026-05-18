@@ -4,15 +4,15 @@ export const config: VercelConfig = {
   buildCommand: 'npm run build',
   framework: 'nextjs',
   functions: {
-    'functions/backtest-engine/index.py': {
+    'api/py/backtest-engine.py': {
       maxDuration: 300,
       memory: 1024,
     },
-    'functions/strategy-engine/index.py': {
+    'api/py/strategy-engine.py': {
       maxDuration: 60,
       memory: 512,
     },
-    'functions/data-fetcher/index.py': {
+    'api/py/data-fetcher.py': {
       maxDuration: 30,
       memory: 256,
     },

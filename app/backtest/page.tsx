@@ -24,24 +24,29 @@ export default function BacktestPage() {
     setLoading(true);
     setError('');
 
-    const resp = await fetch('/api/backtest/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-Key': 'dev-secret-key' },
-      body: JSON.stringify({
-        strategy_id: parseInt(strategyId),
-        etf_tickers: etfList,
-        weights: weightList,
-        start_date: startDate,
-        end_date: endDate,
-      }),
-    });
-    const data = await resp.json();
-    if (data.error && !data.partial_data) {
-      setError(data.detail);
-    } else {
-      setResult(data);
+    try {
+      const resp = await fetch('/api/backtest/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': 'dev-secret-key' },
+        body: JSON.stringify({
+          strategy_id: parseInt(strategyId),
+          etf_tickers: etfList,
+          weights: weightList,
+          start_date: startDate,
+          end_date: endDate,
+        }),
+      });
+      const data = await resp.json();
+      if (data.error && !data.partial_data) {
+        setError(data.detail);
+      } else {
+        setResult(data);
+      }
+    } catch {
+      setError('无法连接计算服务，请检查 Python 函数是否已启动');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (

@@ -19,23 +19,28 @@ export default function ComparePage() {
     setLoading(true);
     setError('');
 
-    const resp = await fetch('/api/compare', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-Key': 'dev-secret-key' },
-      body: JSON.stringify({ etf_tickers: etfList }),
-    });
-    const data = await resp.json();
-    if (data.error) {
-      setError(data.detail);
-    } else {
-      setComparisonData(data.comparison || []);
-      setCorrMatrix(data.correlation_matrix || []);
+    try {
+      const resp = await fetch('/api/compare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': 'dev-secret-key' },
+        body: JSON.stringify({ etf_tickers: etfList }),
+      });
+      const data = await resp.json();
+      if (data.error) {
+        setError(data.detail);
+      } else {
+        setComparisonData(data.comparison || []);
+        setCorrMatrix(data.correlation_matrix || []);
       const eq = etfList.filter(t => data.comparison?.some((c: EtfComparison) => c.ticker === t));
       const initWeights: Record<string, number> = {};
       eq.forEach(t => { initWeights[t] = 1 / eq.length; });
       setWeights(initWeights);
+      }
+    } catch {
+      setError('无法连接计算服务，请检查 Python 函数是否已启动');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (

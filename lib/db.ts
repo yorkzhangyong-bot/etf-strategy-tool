@@ -1,9 +1,10 @@
-import { sql } from '@vercel/postgres';
+import { Pool } from '@neondatabase/serverless';
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 export const db = {
   query: async (text: string, params?: unknown[]) => {
-    const result = await sql.query(text, params);
-    return result;
+    const result = await pool.query(text, params);
+    return { rows: result.rows, rowCount: result.rowCount };
   },
-  sql,
 };
