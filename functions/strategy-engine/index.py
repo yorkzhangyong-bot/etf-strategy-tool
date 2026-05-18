@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler
 import json
 import sys
 import os
+from datetime import datetime, timedelta
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'data-fetcher'))
 
 from yfinance_client import fetch_history, fetch_info
@@ -21,10 +22,16 @@ class handler(BaseHTTPRequestHandler):
             params = body.get("params", {"lookback": "6m", "max_holdings": 10})
             etf_tickers = body.get("etf_tickers", [])
 
+            # Compute dynamic date range from lookback + 1 year buffer
+            lookback_str = params.get("lookback", "6m")
+            lookback_months = int(lookback_str.replace("m", "").replace("mo", ""))
+            end_date = datetime.now().strftime("%Y-%m-%d")
+            start_date = (datetime.now() - timedelta(days=(lookback_months + 12) * 30)).strftime("%Y-%m-%d")
+
             # Compute factor scores for each ETF
             etf_scores = []
             for ticker in etf_tickers:
-                prices_df = fetch_history(ticker, "2020-01-01", "2026-01-01")
+                prices_df = fetch_history(ticker, start_date, end_date)
                 if prices_df is None or prices_df.empty:
                     continue
                 info = fetch_info(ticker) or {}

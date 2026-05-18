@@ -36,11 +36,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data, { status: 500 });
   }
 
-  // Look up ETF IDs for the junction table
-  const etfIds: number[] = [];
-  for (const ticker of etf_tickers) {
-    const r = await db.query('SELECT id FROM etfs WHERE ticker = $1', [ticker]);
-    if (r.rows.length > 0) etfIds.push(r.rows[0].id);
+  // Look up ETF IDs for the junction table, keeping ticker→weight mapping
+  const tickerWeightMap = new Map<string, number>();
+  for (let i = 0; i < etf_tickers.length; i++) {
+    tickerWeightMap.set(etf_tickers[i].toUpperCase(), weights[i]);
   }
 
   // Store result
@@ -51,10 +50,13 @@ export async function POST(req: NextRequest) {
   );
   const backtestId = result.rows[0].id;
 
-  // Insert junction rows
-  for (let i = 0; i < etfIds.length; i++) {
-    await db.query('INSERT INTO backtest_etfs (backtest_id, etf_id, weight) VALUES ($1, $2, $3)',
-      [backtestId, etfIds[i], weights[i]]);
+  // Insert junction rows using ticker→weight mapping, not positional index
+  for (const ticker of etf_tickers) {
+    const r = await db.query('SELECT id FROM etfs WHERE ticker = $1', [ticker.toUpperCase()]);
+    if (r.rows.length > 0) {
+      await db.query('INSERT INTO backtest_etfs (backtest_id, etf_id, weight) VALUES ($1, $2, $3)',
+        [backtestId, r.rows[0].id, tickerWeightMap.get(ticker.toUpperCase()) || 0]);
+    }
   }
 
   return NextResponse.json({ id: backtestId, ...data });

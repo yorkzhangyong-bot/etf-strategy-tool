@@ -38,22 +38,29 @@ class handler(BaseHTTPRequestHandler):
 
         # Fetch all price data
         price_data = {}
+        aligned_weights = []
         failed = []
-        for ticker in tickers:
+        for i, ticker in enumerate(tickers):
             df = fetch_history(ticker, start, end)
             if df is not None and not df.empty:
                 price_data[ticker] = [
                     {"date": str(idx.date()), "close": float(row["Close"])}
                     for idx, row in df.iterrows()
                 ]
+                aligned_weights.append(weights[i] if i < len(weights) else 0)
             else:
                 failed.append(ticker)
 
         if not price_data:
             return {"error": "BACKTEST_FAILED", "detail": f"Cannot fetch data for any ticker: {tickers}", "partial_data": False}
 
+        # Normalize aligned weights to sum to 1.0
+        weight_sum = sum(aligned_weights)
+        if weight_sum > 0:
+            aligned_weights = [w / weight_sum for w in aligned_weights]
+
         # Simulate
-        nav = simulate_portfolio(price_data, weights, list(price_data.keys()), start, end)
+        nav = simulate_portfolio(price_data, aligned_weights, list(price_data.keys()), start, end)
         if not nav:
             return {"error": "BACKTEST_FAILED", "detail": "Simulation produced no results", "partial_data": False}
 
